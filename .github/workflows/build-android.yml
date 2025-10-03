@@ -20,11 +20,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build web app
-        run: npm run build
+      # 👉 Adicionar a plataforma Android
+      - name: Add Capacitor Android
+        run: npx cap add android --yes
 
-      - name: Add Capacitor
+      # 👉 Sincronizar Capacitor
+      - name: Sync Capacitor
         run: npx cap sync android
+
+      - name: Build web app
+        run: echo "Build step (opcional, já tens index.html pronto)"
 
       - name: Build APK
         run: |
@@ -34,5 +39,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
           path: android/app/build/outputs/apk/debug/app-debug.apk
