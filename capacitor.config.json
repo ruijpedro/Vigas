@@ -1,0 +1,6 @@
+{
+  "appId": "com.ruijpedro.vigas",
+  "appName": "Vigas",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}
