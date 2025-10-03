@@ -1,0 +1,14 @@
+{
+  "name": "vigas",
+  "version": "1.0.0",
+  "description": "Mini app académica para cálculo de vigas",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'Static project - nothing to build'"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "devDependencies": {}
+}
