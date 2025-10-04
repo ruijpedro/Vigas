@@ -17,16 +17,14 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Capacitor CLI and dependencies
-        run: |
-          npm install -g @capacitor/cli
-          npm install
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build web app
+        run: npm run build || echo "No build script defined"
 
       - name: Add Capacitor Android
         run: |
-          npx cap init vigas com.ruijpedro.vigas --web-dir=www --npm-client=npm
-          mkdir -p www
-          cp index.html www/
           npx cap add android
           npx cap sync android
 
@@ -38,5 +36,5 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vigas-debug-apk
+          name: app-debug.apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
