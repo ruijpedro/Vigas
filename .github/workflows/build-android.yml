@@ -10,34 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Fazer checkout do repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      # 2️⃣ Configurar Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      # 3️⃣ Instalar dependências
       - name: Install dependencies
-        run: |
-          npm install -g @capacitor/cli
-          npm install
+        run: npm install
 
+      # 4️⃣ Construir a app web (caso tenhas build script)
+      - name: Build web app
+        run: npm run build || echo "No build step, using index.html"
+
+      # 5️⃣ Adicionar plataforma Android do Capacitor (se ainda não existir)
       - name: Add Capacitor Android
         run: |
-          npx cap add android || true
+          npx cap add android || echo "Android platform already exists"
           npx cap sync android
 
-      - name: Build web app
-        run: |
-          npm run build || echo "No build step, using index.html"
-
+      # 6️⃣ Compilar o APK
       - name: Build APK
-        run: |
-          cd android
-          ./gradlew assembleDebug
+        working-directory: android
+        run: ./gradlew assembleDebug
 
+      # 7️⃣ Fazer upload do APK como artefacto (corrigido para v4)
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
