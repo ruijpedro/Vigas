@@ -21,9 +21,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare web directory
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+
       - name: Initialize Capacitor Android project
         run: |
-          npx cap init vigas com.rjpedro.vigas --web-dir=.
+          npx cap init vigas com.rjpedro.vigas --web-dir=www
           npx cap add android
 
       - name: Build web app
