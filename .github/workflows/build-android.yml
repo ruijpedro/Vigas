@@ -17,18 +17,18 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Capacitor CLI and dependencies
+        run: |
+          npm install -g @capacitor/cli
+          npm install
 
       - name: Add Capacitor Android
         run: |
-          npx cap add android --skip-deps || true
-          npx cap sync android
-
-      - name: Build web app
-        run: |
+          npx cap init vigas com.ruijpedro.vigas --web-dir=www --npm-client=npm
           mkdir -p www
           cp index.html www/
+          npx cap add android
+          npx cap sync android
 
       - name: Build APK
         run: |
