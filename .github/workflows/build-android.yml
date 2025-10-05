@@ -24,10 +24,27 @@ jobs:
           npm install -g @capacitor/cli
           npm install
 
+      - name: Ensure Capacitor config exists
+        run: |
+          if [ ! -f "capacitor.config.json" ]; then
+            echo "Creating capacitor.config.json..."
+            cat <<EOF > capacitor.config.json
+            {
+              "appId": "com.ruijpedro.vigas",
+              "appName": "Vigas",
+              "webDir": ".",
+              "bundledWebRuntime": false,
+              "server": { "androidScheme": "https" }
+            }
+          EOF
+          fi
+
       - name: Ensure Android platform exists
         run: |
           if [ ! -d "android" ]; then
-            echo "Android platform not found. Adding..."
+            echo "Android platform not found. Installing and adding..."
+            npm install @capacitor/android@latest
+            npx cap init "Vigas" "com.ruijpedro.vigas" --web-dir=.
             npx cap add android
           else
             echo "Android platform already exists."
