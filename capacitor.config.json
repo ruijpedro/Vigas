@@ -1,9 +1,9 @@
-{
-  "appId": "com.ruijpedro.vigas",
-  "appName": "Vigas",
-  "webDir": ".",
-  "bundledWebRuntime": false,
-  "server": {
-    "androidScheme": "https"
-  }
-}
+      - name: Ensure Android platform exists
+        run: |
+          if [ ! -d "android" ]; then
+            echo "Android platform not found. Installing dependencies and adding..."
+            npm install @capacitor/android@latest
+            npx cap add android
+          else
+            echo "Android platform already exists."
+          fi
