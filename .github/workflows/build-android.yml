@@ -2,8 +2,7 @@ name: Build Android App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -19,40 +18,52 @@ jobs:
         with:
           node-version: 18
 
+      - name: Set up Java (required for Gradle)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Garante que a pasta www existe (precaução para CI)
+      - name: Ensure web directory exists
+        run: |
+          mkdir -p www
+          if [ ! -f "www/index.html" ]; then
+            echo '<!doctype html><html><body><h1>Vigas</h1></body></html>' > www/index.html
+          fi
+
       - name: Install dependencies
         run: |
           npm install -g @capacitor/cli
           npm install
+          npm install @capacitor/android@latest
 
       - name: Ensure Capacitor config exists
         run: |
           if [ ! -f "capacitor.config.json" ]; then
-            echo "Creating capacitor.config.json..."
-            cat <<EOF > capacitor.config.json
+            cat > capacitor.config.json <<'JSON'
             {
               "appId": "com.ruijpedro.vigas",
               "appName": "Vigas",
-              "webDir": ".",
+              "webDir": "www",
               "bundledWebRuntime": false,
               "server": { "androidScheme": "https" }
             }
-          EOF
+JSON
           fi
 
       - name: Ensure Android platform exists
         run: |
           if [ ! -d "android" ]; then
-            echo "Android platform not found. Installing and adding..."
-            npm install @capacitor/android@latest
-            npx cap init "Vigas" "com.ruijpedro.vigas" --web-dir=.
+            echo "Android platform not found. Adding..."
+            npx cap init "Vigas" "com.ruijpedro.vigas" --web-dir=www || true
             npx cap add android
           else
             echo "Android platform already exists."
           fi
 
       - name: Sync Capacitor project
-        run: |
-          npx cap sync android
+        run: npx cap sync android
 
       - name: Build APK and AAB
         run: |
