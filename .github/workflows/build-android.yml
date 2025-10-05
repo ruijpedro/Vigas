@@ -1,4 +1,4 @@
-name: Build Android App
+naname: Build Android App
 
 on:
   push:
@@ -18,51 +18,25 @@ jobs:
         with:
           node-version: 18
 
-      - name: Set up Java (required for Gradle)
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      # Garante que a pasta www existe (precaução para CI)
-      - name: Ensure web directory exists
-        run: |
-          mkdir -p www
-          if [ ! -f "www/index.html" ]; then
-            echo '<!doctype html><html><body><h1>Vigas</h1></body></html>' > www/index.html
-          fi
-
       - name: Install dependencies
         run: |
-          npm install -g @capacitor/cli
+          npm install -g @ionic/cli @capacitor/cli
           npm install
-          npm install @capacitor/android@latest
+          npm install @capacitor/android
 
-      - name: Ensure Capacitor config exists
+      - name: Build web app
         run: |
-          if [ ! -f "capacitor.config.json" ]; then
-            cat > capacitor.config.json <<'JSON'
-            {
-              "appId": "com.ruijpedro.vigas",
-              "appName": "Vigas",
-              "webDir": "www",
-              "bundledWebRuntime": false,
-              "server": { "androidScheme": "https" }
-            }
-JSON
-          fi
+          npm run build || echo "No build script, using /www directly"
 
-      - name: Ensure Android platform exists
+      - name: Add Android platform
         run: |
           if [ ! -d "android" ]; then
-            echo "Android platform not found. Adding..."
-            npx cap init "Vigas" "com.ruijpedro.vigas" --web-dir=www || true
             npx cap add android
           else
-            echo "Android platform already exists."
+            echo "Android platform already exists"
           fi
 
-      - name: Sync Capacitor project
+      - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Build APK and AAB
@@ -72,19 +46,14 @@ JSON
           ./gradlew assembleDebug
           ./gradlew bundleRelease
 
-      - name: Upload build artifacts
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Vigas-Builds
-          path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/bundle/release/app-release.aab
+          name: Vigas-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Create GitHub Release and upload files
-        uses: softprops/action-gh-release@v1
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/bundle/release/app-release.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: Vigas-AAB
+          path: android/app/build/outputs/bundle/release/app-release.aab
