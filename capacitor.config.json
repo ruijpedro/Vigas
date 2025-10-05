@@ -1,9 +1,6 @@
 {
-  "appId": "com.ruijpedro.vigas",
+  "appId": "com.rjp.vigas",
   "appName": "Vigas",
   "webDir": "www",
-  "bundledWebRuntime": false,
-  "server": {
-    "androidScheme": "https"
-  }
+  "bundledWebRuntime": false
 }
